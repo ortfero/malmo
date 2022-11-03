@@ -25,6 +25,8 @@ namespace malmo {
         };
         list_node* next;
         list_node* previous;
+        
+        list_node() {}
     }; // list_node
     
     
@@ -203,7 +205,7 @@ namespace malmo {
     }; // list_const_iterator
     
     
-    template<typename T, typename A>
+    template<typename T, typename A = pyramid<list_node<T>>>
     class list {
         
         list_node<T> head_;
@@ -213,6 +215,12 @@ namespace malmo {
         using value_type = T;
         using iterator = list_iterator<T>;
         using const_iterator = list_const_iterator<T>;
+        
+        
+        list() noexcept
+        : nodes_{nullptr} {
+            reset();
+        }
             
             
         list(list_node_pool<T, A>& nodes) noexcept
@@ -237,20 +245,26 @@ namespace malmo {
         list(list const&) = delete;
         list& operator = (list const&) = delete;
         
-        list(list&& other) noexcept: nodes_{other.nodes_} {
-            head_.next = other.head_.next;
-            head_.previous = other.head_.previous;
-            other.reset();
+        list(list&& other) noexcept {
+            transfer_from(other);
         }
         
         
         list& operator = (list&& other) noexcept {
             cleanup();
-            nodes_ = other.nodes_;
-            head_.next = other.head_.next;
-            head_.previous = other.head_.previous;
-            other.reset();
+            transfer_from(other);
             return *this;
+        }
+        
+        
+        bool has_pool() const noexcept {
+            return nodes_ != nullptr;
+        }
+        
+        
+        void set_pool(list_node_pool<T, A>& nodes) noexcept {
+            clear();
+            nodes_ = &nodes;
         }
                 
         
@@ -368,7 +382,22 @@ namespace malmo {
         
     private:
     
+        void transfer_from(list& other) {
+            nodes_ = other.nodes_;
+            if(other.head_.next == &other.head_)
+                head_.next = &head_;
+            else
+                head_.next = other.head_.next;
+            if(other.head_.previous == &other.head_)
+                head_.previous = &head_;
+            else
+                head_.previous = other.head_.previous;
+            other.reset();
+        }
+    
         void cleanup() noexcept {
+            if(!nodes_)
+                return;
             auto* node = head_.next;
             while(node != &head_) {
                 auto* disposable = node;
