@@ -27,7 +27,7 @@ Drop `malmo` directory at your include path.
 
 ### Using pyramid allocator for std::map
 
-```
+```cpp
 #include <map>
 #include <malmo/pyramid.hpp>
 
@@ -42,7 +42,7 @@ using map = std::map<int,
 
 ### Using lists with common pool of nodes
 
-```
+```cpp
 #include <malmo/list.hpp>
 
 ...
