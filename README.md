@@ -24,6 +24,9 @@ Drop `malmo` directory at your include path.
 
 ## Snippets
 
+
+### Using pyramid allocator for std::map
+
 ```
 #include <map>
 #include <malmo/pyramid.hpp>
@@ -34,6 +37,21 @@ using map = std::map<int,
                      int,
                      std::less<int>,
                      malmo::pyramid<std::pair<int const, int>>>;
+```
+
+
+### Using lists with common pool of nodes
+
+```
+#include <malmo/list.hpp>
+
+...
+
+auto pool = malmo::list_node_pool<int>{};
+auto list1 = malmo::list{pool};
+auto list2 = malmo::list{pool}; // list1 and list2 have common pool of nodes
+...
+list1.clear(); list2.clear(); // destroy nodes before pool destruction
 ```
 
 
