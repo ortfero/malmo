@@ -16,6 +16,15 @@ TEST_SUITE("list") {
     }
     
     
+    SCENARIO("construct from other empty list") {
+        auto pool = malmo::list_node_pool<int>{};
+        auto other = malmo::list{pool};
+        auto target = malmo::list{std::move(other)};
+        REQUIRE(target.empty());
+        REQUIRE_EQ(target.begin(), target.end());
+    }
+    
+    
     SCENARIO("insert value and clear") {
         auto pool = malmo::list_node_pool<int>{};
         auto target = malmo::list{pool};
