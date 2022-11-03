@@ -130,9 +130,8 @@ int main() {
     auto pool = pool_type{};
     auto const list_map_start = std::chrono::steady_clock::now();
     for(auto id: insert_numbers) {
-        auto& list = list_map[id];
-        if(!list.has_pool())
-            list.set_pool(pool);
+        auto const emplaced = list_map.try_emplace(id, pool);
+        auto& list = emplaced.first->second;
         list.push_back(data_type{id});
     }
     for(auto id: erase_numbers)
