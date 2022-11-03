@@ -14,7 +14,7 @@
 namespace malmo {
     
     
-    template<typename T, typename A>
+    template<typename T, typename A = pyramid<list_node<T>>>
     class ordered_list {
         using adapted = list<T, A>;
         
@@ -25,6 +25,9 @@ namespace malmo {
         using value_type = T;
         using iterator = list_iterator<T>;
         using const_iterator = list_const_iterator<T>;
+        
+        
+        ordered_list() noexcept = default;
     
     
         ordered_list(list_node_pool<T, A>& nodes) noexcept
@@ -42,6 +45,8 @@ namespace malmo {
         ordered_list(ordered_list&&) = default;
         ordered_list& operator = (ordered_list&&) = default;
         
+        bool has_pool() const noexcept { return list_.has_pool(); }
+        void set_pool(list_node_pool<T, A>& nodes) noexcept { list_.set_pool(nodes); }
         bool empty() const noexcept { return list_.empty(); }
         const_iterator begin() const noexcept { return list_.begin(); }
         const_iterator end() const noexcept { return list_.end(); }
