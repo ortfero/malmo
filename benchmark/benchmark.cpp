@@ -9,6 +9,7 @@
 
 #include <absl/container/btree_map.h>
 
+#include <malmo/list.hpp>
 #include <malmo/pyramid.hpp>
 
 
@@ -117,37 +118,28 @@ int main() {
     std::printf(
         "std::map<int, std::deque<data_type>>: %lldms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(deque_map_time)
-            .count());             
+            .count());
             
+    using pool_type = malmo::list_node_pool<data_type>;
+    using list_type = malmo::list<data_type>;
     using list_map_type = std::map<int,
-                                   data_type*,
+                                   list_type,
                                    std::less<int>,
-                                   malmo::pyramid<std::pair<const int, data_type*>>>;
+                                   malmo::pyramid<std::pair<const int, list_type>>>;
     auto list_map = list_map_type{};
-    auto pyramid_allocator = malmo::pyramid<data_type>{};
+    auto pool = pool_type{};
     auto const list_map_start = std::chrono::steady_clock::now();
     for(auto id: insert_numbers) {
-        auto* list = list_map[id];
-        auto* item = pyramid_allocator.allocate(1);
-        new (item) data_type{id};
-        item->next = list;
-        list = item;
+        auto& list = list_map[id];
+        if(!list.has_pool())
+            list.set_pool(pool);
+        list.push_back(data_type{id});
     }
-    for(auto id: erase_numbers) {
-        auto it = list_map.find(id);
-        if(it == list_map.end())
-            continue;
-        auto* item = it->second;
-        while(item != nullptr) {
-            auto* disposable = item;
-            item = item->next;
-            pyramid_allocator.deallocate(disposable, 1);
-        }
-        list_map.erase(it);
-    }
+    for(auto id: erase_numbers)
+        list_map.erase(id);
     auto const list_map_time = std::chrono::steady_clock::now() - list_map_start;
     std::printf(
-        "std::map<int, data_type*, malmo::pyramid>: %lldms\n",
+        "std::map<int, malmo::list<data_type>, malmo::pyramid>: %lldms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(list_map_time)
             .count()); 
 
