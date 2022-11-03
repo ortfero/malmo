@@ -61,11 +61,11 @@ Insert and remove 1'000'000 random numbers from 1 to 50:
 
 | Data type                                  | Time, ms | Percent |
 |:-------------------------------------------|---------:|--------:|
-| multimap                                   |      707 |    100% |
-| multimap with pyramid allocator            |      514 |     72% |
-| abseil btree_multimap                      |     3940 |    557% |
-| map of vectors                             |      474 |     67% |
-| map of deques                              |      448 |     63% |
-| map of custom lists with pyramid allocator |      193 |     27% |
+| multimap                                   |      661 |    100% |
+| multimap with pyramid allocator            |      490 |     74% |
+| abseil btree_multimap                      |     3801 |    575% |
+| map of vectors                             |      472 |     71% |
+| map of deques                              |      429 |     64% |
+| map of custom lists with pyramid allocator |      207 |     31% |
 
 Ryzen 4800u, Windows 11, gcc 11.2.0
