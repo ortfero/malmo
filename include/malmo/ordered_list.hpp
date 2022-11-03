@@ -16,6 +16,9 @@ namespace malmo {
     
     template<typename T, typename A = pyramid<list_node<T>>>
     class ordered_list {
+        static_assert(std::is_same_v<typename A::value_type, list_node<T>>,
+            "allocator for list_node<T> is expected");
+            
         using adapted = list<T, A>;
         
         adapted list_;

@@ -33,12 +33,13 @@ namespace malmo {
     template<typename T, class A = pyramid<list_node<T>>>
     class list_node_pool {
         
+        static_assert(std::is_same_v<typename A::value_type, list_node<T>>,
+            "allocator for list_node<T> is expected");
+        
         A allocator_;
         
     public:
     
-        static_assert(std::is_same_v<typename A::value_type, list_node<T>>,
-            "list_node<T> allocator is expected");
         using value_type = T;
         using allocator_type = A;
         
@@ -207,6 +208,9 @@ namespace malmo {
     
     template<typename T, typename A = pyramid<list_node<T>>>
     class list {
+        
+        static_assert(std::is_same_v<typename A::value_type, list_node<T>>,
+            "allocator for list_node<T> is expected");
         
         list_node<T> head_;
         list_node_pool<T, A>* nodes_;
